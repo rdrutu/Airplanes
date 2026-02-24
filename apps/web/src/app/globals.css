@@ -1,0 +1,106 @@
+@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --grid-line: rgba(34, 211, 238, 0.12);
+  --cell-empty: rgba(13, 31, 60, 0.6);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html, body {
+  min-height: 100vh;
+  background-color: #020818;
+  color: #e2e8f0;
+  font-family: 'JetBrains Mono', 'Fira Code', monospace;
+  overflow-x: hidden;
+}
+
+/* Fundal cu rețea de linii — "Blueprint" */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background-image:
+    linear-gradient(rgba(34, 211, 238, 0.04) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(34, 211, 238, 0.04) 1px, transparent 1px);
+  background-size: 40px 40px;
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* Gradient radial în centru */
+body::after {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background: radial-gradient(ellipse 80% 60% at 50% 0%, rgba(34, 211, 238, 0.06) 0%, transparent 70%);
+  pointer-events: none;
+  z-index: 0;
+}
+
+#__next, main {
+  position: relative;
+  z-index: 1;
+}
+
+/* Scrollbar custom */
+::-webkit-scrollbar {
+  width: 6px;
+}
+::-webkit-scrollbar-track {
+  background: #0a1628;
+}
+::-webkit-scrollbar-thumb {
+  background: #1e3a5f;
+  border-radius: 3px;
+}
+
+/* Utility classes */
+@layer components {
+  .glass-panel {
+    @apply bg-navy-800/60 backdrop-blur-sm border border-cyan-400/10 rounded-xl;
+  }
+
+  .btn-primary {
+    @apply bg-cyan-400 text-navy-950 font-bold px-6 py-3 rounded-lg
+           hover:bg-cyan-300 active:scale-95 transition-all duration-150
+           disabled:opacity-40 disabled:cursor-not-allowed disabled:active:scale-100;
+  }
+
+  .btn-secondary {
+    @apply bg-navy-700 text-cyan-400 font-semibold px-6 py-3 rounded-lg
+           border border-cyan-400/20
+           hover:bg-navy-600 hover:border-cyan-400/40 active:scale-95
+           transition-all duration-150
+           disabled:opacity-40 disabled:cursor-not-allowed;
+  }
+
+  .btn-danger {
+    @apply bg-red-600/80 text-white font-semibold px-6 py-3 rounded-lg
+           hover:bg-red-500 active:scale-95 transition-all duration-150;
+  }
+
+  .input-field {
+    @apply bg-navy-900 border border-navy-600 text-slate-100 rounded-lg px-4 py-3
+           placeholder-slate-500 focus:outline-none focus:border-cyan-400/60
+           focus:ring-1 focus:ring-cyan-400/30 transition-all duration-150 w-full;
+  }
+
+  .badge-turn {
+    @apply px-3 py-1 rounded-full text-xs font-bold tracking-wider uppercase;
+  }
+
+  .badge-your-turn {
+    @apply badge-turn bg-cyan-400/20 text-cyan-400 border border-cyan-400/40 animate-pulse;
+  }
+
+  .badge-wait {
+    @apply badge-turn bg-navy-700 text-slate-400 border border-navy-500;
+  }
+}
