@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { motion } from 'framer-motion';
-import { getSocket } from '@/lib/socket';
+import { getSocket, connectAndRun } from '@/lib/socket';
 import { useGame } from '@/context/GameContext';
 import { useTranslation } from '@/lib/i18n';
 
@@ -18,40 +18,38 @@ export default function HomeScreen() {
   const [createdCode, setCreatedCode] = useState('');
   const [copied, setCopied] = useState(false);
 
-  const socket = getSocket();
-
-  async function handleCreate() {
+  function handleCreate() {
     if (!nickname.trim()) return setErrorMsg('Introdu un nickname.');
     setLoading(true);
     setErrorMsg('');
 
-    if (!socket.connected) socket.connect();
-
-    socket.emit('create_room', nickname.trim(), (res) => {
-      setLoading(false);
-      if (!res.ok) return setErrorMsg(res.error);
-      setCreatedCode(res.code);
-      dispatch({ type: 'ROOM_CREATED', code: res.code, playerId: res.playerId, nickname: nickname.trim() });
+    connectAndRun(s => {
+      s.emit('create_room', nickname.trim(), (res) => {
+        setLoading(false);
+        if (!res.ok) return setErrorMsg(res.error);
+        setCreatedCode(res.code);
+        dispatch({ type: 'ROOM_CREATED', code: res.code, playerId: res.playerId, nickname: nickname.trim() });
+      });
     });
   }
 
-  async function handleJoin() {
+  function handleJoin() {
     if (!nickname.trim()) return setErrorMsg('Introdu un nickname.');
     if (!roomCode.trim()) return setErrorMsg('Introdu codul camerei.');
     setLoading(true);
     setErrorMsg('');
 
-    if (!socket.connected) socket.connect();
-
-    socket.emit('join_room', { code: roomCode.trim().toUpperCase(), nickname: nickname.trim() }, (res) => {
-      setLoading(false);
-      if (!res.ok) return setErrorMsg(res.error);
-      dispatch({
-        type: 'ROOM_JOINED',
-        code: res.code,
-        playerId: res.playerId,
-        nickname: nickname.trim(),
-        opponentNickname: res.opponentNickname,
+    connectAndRun(s => {
+      s.emit('join_room', { code: roomCode.trim().toUpperCase(), nickname: nickname.trim() }, (res) => {
+        setLoading(false);
+        if (!res.ok) return setErrorMsg(res.error);
+        dispatch({
+          type: 'ROOM_JOINED',
+          code: res.code,
+          playerId: res.playerId,
+          nickname: nickname.trim(),
+          opponentNickname: res.opponentNickname,
+        });
       });
     });
   }
@@ -64,7 +62,7 @@ export default function HomeScreen() {
   }
 
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center px-4 py-12">
+    <div className="min-h-screen flex flex-col items-center justify-center px-4 py-8 sm:py-12">
 
       {/* Language Toggle */}
       <div className="absolute top-4 right-4">
@@ -87,15 +85,15 @@ export default function HomeScreen() {
       >
         {/* Logo / Title */}
         <div className="mb-4 select-none">
-          <div className="inline-flex items-center justify-center w-20 h-20 rounded-2xl" style={{ background: 'var(--cell-head-bg)', border: '1px solid var(--bg-panel-border)' }}>
-            <span className="font-black text-3xl tracking-tighter" style={{ color: 'var(--text-accent)' }}>AVN</span>
+          <div className="inline-flex items-center justify-center w-16 h-16 sm:w-20 sm:h-20 rounded-2xl" style={{ background: 'var(--cell-head-bg)', border: '1px solid var(--bg-panel-border)' }}>
+            <span className="font-black text-2xl sm:text-3xl tracking-tighter" style={{ color: 'var(--text-accent)' }}>AVN</span>
           </div>
         </div>
-        <h1 className="text-5xl font-bold tracking-tight mb-2" style={{ color: 'var(--text-accent)' }}>
+        <h1 className="text-3xl sm:text-5xl font-bold tracking-tight mb-2" style={{ color: 'var(--text-accent)' }}>
           {t('homeTitle')}
         </h1>
-        <p className="text-base" style={{ color: 'var(--text-muted)' }}>{t('homeSubtitle')}</p>
-        <p className="text-sm mt-1 italic" style={{ color: 'var(--text-muted)', opacity: 0.6 }}>{t('homeTagline')}</p>
+        <p className="text-sm sm:text-base" style={{ color: 'var(--text-muted)' }}>{t('homeSubtitle')}</p>
+        <p className="text-xs sm:text-sm mt-1 italic" style={{ color: 'var(--text-muted)', opacity: 0.6 }}>{t('homeTagline')}</p>
       </motion.div>
 
       <motion.div
@@ -103,7 +101,7 @@ export default function HomeScreen() {
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.3 }}
-        className="glass-panel p-8 w-full max-w-md"
+        className="glass-panel p-5 sm:p-8 w-full max-w-md"
       >
 
         {/* ── Meniu principal ── */}

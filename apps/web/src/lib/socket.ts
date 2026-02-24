@@ -21,3 +21,17 @@ export function resetSocket() {
     socket = null;
   }
 }
+
+/** Conectează socket-ul dacă nu e deja conectat, apoi rulează callback-ul. */
+export function connectAndRun(fn: (s: Socket<ServerToClientEvents, ClientToServerEvents>) => void) {
+  const s = getSocket();
+  if (s.connected) {
+    fn(s);
+  } else {
+    s.once('connect', () => fn(s));
+    s.once('connect_error', (err) => {
+      console.error('Socket connect error:', err);
+    });
+    if (!s.active) s.connect();
+  }
+}

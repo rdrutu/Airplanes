@@ -113,10 +113,10 @@ export default function BattleScreen() {
   };
 
   return (
-    <div className="min-h-screen flex flex-col items-center justify-start px-2 py-6">
+    <div className="min-h-screen flex flex-col items-center justify-start px-1 sm:px-2 py-4 sm:py-6">
 
       {/* Header */}
-      <div className="flex items-center gap-3 mb-4 text-sm">
+      <div className="flex flex-wrap items-center justify-center gap-x-3 gap-y-1 mb-4 text-sm">
         <button
           onClick={handleAbandon}
           className="text-xs px-3 py-1 rounded transition-all"
@@ -208,7 +208,7 @@ export default function BattleScreen() {
       <Legend />
 
       {/* Stats */}
-      <div className="mt-5 flex gap-6 text-xs" style={{ color: 'var(--text-muted)' }}>
+      <div className="mt-5 flex flex-wrap gap-x-6 gap-y-1 justify-center text-xs" style={{ color: 'var(--text-muted)' }}>
         <span>Lovit: <span style={{ color: 'var(--cell-hit-bd)', fontWeight: 700 }}>{myHits}</span></span>
         <span>Ratat: <span style={{ fontWeight: 700 }}>{myMisses}</span></span>
         {myHits + myMisses > 0 && (
@@ -377,14 +377,14 @@ function TargetGrid({ grid, interactive, sketchMap, onShoot, onSketch, lastShot,
     <div className="select-none">
       <div className="flex mb-1 ml-7">
         {COL_LABELS.map(l => (
-          <div key={l} className="w-10 h-5 flex items-center justify-center text-xs font-mono font-semibold" style={{ color: 'var(--text-muted)' }}>
+          <div key={l} className="grid-col-label" style={{ color: 'var(--text-muted)' }}>
             {l}
           </div>
         ))}
       </div>
       {grid.map((row, rIdx) => (
         <div key={rIdx} className="flex">
-          <div className="w-7 h-10 flex items-center justify-center text-xs font-mono font-semibold" style={{ color: 'var(--text-muted)' }}>
+          <div className="grid-row-label" style={{ color: 'var(--text-muted)' }}>
             {ROW_LABELS[rIdx]}
           </div>
           {row.map((cell, cIdx) => (
@@ -420,14 +420,14 @@ function FleetGrid({ grid, lastIncoming }: FleetGridProps) {
     <div className="select-none">
       <div className="flex mb-1 ml-7">
         {COL_LABELS.map(l => (
-          <div key={l} className="w-10 h-5 flex items-center justify-center text-xs font-mono font-semibold" style={{ color: 'var(--text-muted)' }}>
+          <div key={l} className="grid-col-label" style={{ color: 'var(--text-muted)' }}>
             {l}
           </div>
         ))}
       </div>
       {grid.map((row, rIdx) => (
         <div key={rIdx} className="flex">
-          <div className="w-7 h-10 flex items-center justify-center text-xs font-mono font-semibold" style={{ color: 'var(--text-muted)' }}>
+          <div className="grid-row-label" style={{ color: 'var(--text-muted)' }}>
             {ROW_LABELS[rIdx]}
           </div>
           {row.map((cell, cIdx) => {

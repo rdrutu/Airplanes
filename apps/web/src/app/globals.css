@@ -9,6 +9,8 @@
  */
 :root {
   --font-body: 'JetBrains Mono', 'Fira Code', monospace;
+  /* Responsive grid cell size: auto-scales on mobile, max 40px on desktop */
+  --cell-sz: clamp(28px, 9.4vw, 40px);
   --bg-body: #020818;
   --bg-panel: rgba(13, 31, 60, 0.6);
   --bg-panel-border: rgba(34, 211, 238, 0.10);
@@ -255,12 +257,45 @@ body::after {
     @apply badge-turn;
   }
 
-  /* Base grid cell  sizing only */
+  /* Base grid cell – responsive sizing via --cell-sz */
   .grid-cell {
-    @apply w-10 h-10 flex items-center justify-center select-none;
+    width: var(--cell-sz);
+    min-width: var(--cell-sz);
+    height: var(--cell-sz);
+    @apply flex items-center justify-center select-none;
     border: 1px solid;
     border-radius: 2px;
     transition: background-color 0.1s, border-color 0.1s;
+    touch-action: manipulation;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  /* Column header label (per-cell width, fixed height) */
+  .grid-col-label {
+    width: var(--cell-sz);
+    min-width: var(--cell-sz);
+    height: 1.25rem;
+    @apply flex items-center justify-center text-xs font-mono font-semibold;
+  }
+
+  /* Row label (fixed 1.75rem width, matches cell height) */
+  .grid-row-label {
+    width: 1.75rem;
+    min-width: 1.75rem;
+    height: var(--cell-sz);
+    @apply flex items-center justify-center text-xs font-mono font-semibold;
+  }
+
+  /* Setup grid cell (same size, but no data-state coloring) */
+  .grid-setup-cell {
+    width: var(--cell-sz);
+    min-width: var(--cell-sz);
+    height: var(--cell-sz);
+    @apply flex items-center justify-center;
+    border-radius: 2px;
+    transition: background-color 0.075s, border-color 0.075s;
+    touch-action: manipulation;
+    -webkit-tap-highlight-color: transparent;
   }
 }
 

@@ -1,9 +1,16 @@
 'use client';
 
+import { useState, useEffect } from 'react';
 import { useGame } from '@/context/GameContext';
 
 export default function ThemeToggle() {
   const { state, dispatch } = useGame();
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => setMounted(true), []);
+
+  // Nu randăm nimic pe server - evităm hydration mismatch
+  if (!mounted) return null;
+
   const isBlueprint = state.theme === 'blueprint';
 
   return (

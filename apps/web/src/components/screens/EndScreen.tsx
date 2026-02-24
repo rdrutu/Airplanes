@@ -29,7 +29,7 @@ export default function EndScreen() {
   }
 
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center px-4 py-12">
+    <div className="min-h-screen flex flex-col items-center justify-center px-4 py-8 sm:py-12">
 
       {/* Victory / Defeat */}
       <motion.div
@@ -39,7 +39,7 @@ export default function EndScreen() {
         className="text-center mb-8"
       >
         <div className="mb-6">
-        <div className={`inline-flex items-center justify-center w-24 h-24 rounded-full border-2 font-black text-2xl tracking-widest`}
+        <div className={`inline-flex items-center justify-center w-20 h-20 sm:w-24 sm:h-24 rounded-full border-2 font-black text-xl sm:text-2xl tracking-widest`}
             style={{
               borderColor: state.didIWin ? 'var(--text-accent)' : 'var(--ind-miss)',
               background:  state.didIWin ? 'var(--cell-head-bg)' : 'var(--cell-miss-bg)',
@@ -48,7 +48,7 @@ export default function EndScreen() {
             {state.didIWin ? 'WIN' : 'GG'}
           </div>
         </div>
-        <h1 className="text-5xl font-bold tracking-tight mb-2"
+        <h1 className="text-3xl sm:text-5xl font-bold tracking-tight mb-2"
           style={{ color: state.didIWin ? 'var(--text-accent)' : 'var(--ind-miss)' }}>
           {state.didIWin ? t('victory') : t('defeat')}
         </h1>
