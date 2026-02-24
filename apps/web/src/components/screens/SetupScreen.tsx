@@ -21,6 +21,12 @@ interface PlacedPlaneInfo {
   headKey: string;
 }
 
+function handleLeave(dispatch: ReturnType<typeof useGame>['dispatch']) {
+  getSocket().emit('leave_room');
+  getSocket().disconnect();
+  dispatch({ type: 'RESET' });
+}
+
 export default function SetupScreen() {
   const { state, dispatch } = useGame();
   const t = useTranslation(state.lang);
@@ -165,14 +171,25 @@ export default function SetupScreen() {
         animate={{ opacity: 1, y: 0 }}
         className="text-center mb-6"
       >
-        <h1 className="text-3xl font-bold text-cyan-400">{t('setupTitle')}</h1>
-        <p className="text-slate-400 text-sm mt-1">{t('setupSubtitle')}</p>
+        <h1 className="text-3xl font-bold" style={{ color: 'var(--text-accent)' }}>{t('setupTitle')}</h1>
+        <p className="text-sm mt-1" style={{ color: 'var(--text-muted)' }}>{t('setupSubtitle')}</p>
         {state.opponentNickname && (
-          <p className="text-slate-500 text-xs mt-1">
-            Adversar: <span className="text-slate-300">{state.opponentNickname}</span>
+          <p className="text-xs mt-1" style={{ color: 'var(--text-muted)' }}>
+            Adversar: <span style={{ color: 'var(--text-primary)' }}>{state.opponentNickname}</span>
           </p>
         )}
       </motion.div>
+
+      {/* Abandon btn */}
+      <button
+        className="absolute top-4 left-20 text-xs px-3 py-1 rounded transition-colors"
+        style={{ color: 'var(--text-muted)', border: '1px solid var(--bg-panel-border)' }}
+        onMouseEnter={e => (e.currentTarget.style.color = 'var(--ind-miss)')}
+        onMouseLeave={e => (e.currentTarget.style.color = 'var(--text-muted)')}
+        onClick={() => handleLeave(dispatch)}
+      >
+        ← Ieși
+      </button>
 
       <div className="flex flex-col lg:flex-row gap-8 items-start justify-center w-full max-w-4xl">
 
@@ -210,7 +227,7 @@ export default function SetupScreen() {
           {/* Rotire + hint */}
           <div className="glass-panel p-4">
             <div className="flex items-center justify-between mb-3">
-              <span className="text-slate-300 text-sm font-semibold">Orientare</span>
+              <span className="text-sm font-semibold" style={{ color: 'var(--text-primary)' }}>Orientare</span>
               <button
                 className="btn-secondary py-2 px-4 text-sm"
                 onClick={handleRotate}
@@ -224,29 +241,29 @@ export default function SetupScreen() {
 
           {/* Avioanele */}
           <div className="glass-panel p-4">
-            <p className="text-slate-400 text-xs uppercase tracking-widest mb-3">{t('selectPlane')}</p>
+            <p className="text-xs uppercase tracking-widest mb-3" style={{ color: 'var(--text-muted)' }}>{t('selectPlane')}</p>
             {[0, 1, 2].map(id => {
               const placed = placedPlanes.find(p => p.plane.id === id);
               const isSelected = selectedPlane === id && !ready;
               return (
                 <div
                   key={id}
-                  className={`flex items-center justify-between p-3 rounded-lg mb-2 cursor-pointer border transition-all duration-150 ${
-                    isSelected
-                      ? `${PLANE_BG[id]} ${PLANE_BORDER[id]}`
-                      : 'bg-navy-900/50 border-navy-700 hover:border-navy-500'
-                  }`}
+                  className="flex items-center justify-between p-3 rounded-lg mb-2 cursor-pointer border transition-all duration-150"
+                  style={{
+                    background: isSelected ? 'var(--cell-head-bg)' : 'var(--cell-empty-bg)',
+                    borderColor: isSelected ? 'var(--cell-head-bd)' : 'var(--cell-empty-bd)',
+                  }}
                   onClick={() => !ready && setSelectedPlane(id)}
                 >
                   <div className="flex items-center gap-2">
-                    <span className={`text-xs font-black ${PLANE_COLORS[id]}`}>A{id + 1}</span>
-                    <span className="text-slate-300 text-sm">
+                    <span className="text-xs font-black" style={{ color: 'var(--text-accent)' }}>A{id + 1}</span>
+                    <span className="text-sm" style={{ color: 'var(--text-primary)' }}>
                       {t('plane')} {id + 1}
                     </span>
                   </div>
                   {placed ? (
                     <div className="flex items-center gap-2">
-                      <span className="text-emerald-400 text-xs">✓ {ORIENT_NAMES[placed.plane.orientation]}</span>
+                      <span className="text-xs" style={{ color: 'var(--ind-dead)' }}>✓ {ORIENT_NAMES[placed.plane.orientation]}</span>
                       {!ready && (
                         <button
                           className="text-slate-500 hover:text-red-400 text-xs transition-colors"
@@ -257,7 +274,7 @@ export default function SetupScreen() {
                       )}
                     </div>
                   ) : (
-                    <span className="text-slate-600 text-xs">neplasat</span>
+                    <span className="text-xs" style={{ color: 'var(--text-muted)' }}>neplasat</span>
                   )}
                 </div>
               );
@@ -267,8 +284,8 @@ export default function SetupScreen() {
           {/* Status adversar */}
           <div className="glass-panel p-4 text-sm">
             {state.opponentReady
-              ? <p className="text-emerald-400">✓ {t('opponentReady')}</p>
-              : <p className="text-slate-500">{t('waitingOpponentSetup')}</p>
+              ? <p style={{ color: 'var(--ind-dead)' }}>✓ {t('opponentReady')}</p>
+              : <p style={{ color: 'var(--text-muted)' }}>{t('waitingOpponentSetup')}</p>
             }
           </div>
 
@@ -309,7 +326,7 @@ export default function SetupScreen() {
                 Ești gata! Aștepți adversarul...
               </div>
               {state.opponentNickname && !state.opponentReady && (
-                <p className="text-slate-500 text-xs">{state.opponentNickname} plasează avioanele...</p>
+                <p className="text-xs" style={{ color: 'var(--text-muted)' }}>{state.opponentNickname} plasează avioanele...</p>
               )}
             </motion.div>
           )}
@@ -323,8 +340,8 @@ export default function SetupScreen() {
           animate={{ opacity: 1 }}
           className="mt-6 text-center"
         >
-          <p className="text-slate-500 text-sm">Codul camerei:</p>
-          <p className="text-cyan-400 font-bold text-2xl tracking-widest">{state.roomCode}</p>
+          <p className="text-sm" style={{ color: 'var(--text-muted)' }}>Codul camerei:</p>
+          <p className="font-bold text-2xl tracking-widest" style={{ color: 'var(--text-accent)' }}>{state.roomCode}</p>
         </motion.div>
       )}
     </div>
@@ -351,12 +368,12 @@ function SetupGrid({ grid, hoveredCells, headCells, previewValid, onCellClick, o
     <div className="select-none">
       <div className="flex mb-1 ml-7">
         {COL_LABELS.map(l => (
-          <div key={l} className="w-10 h-10 flex items-center justify-center text-navy-500 text-xs font-mono font-semibold">{l}</div>
+          <div key={l} className="w-10 h-5 flex items-center justify-center text-xs font-mono font-semibold" style={{ color: 'var(--text-muted)' }}>{l}</div>
         ))}
       </div>
       {grid.map((row, rIdx) => (
         <div key={rIdx} className="flex">
-          <div className="w-7 flex items-center justify-center text-navy-500 text-xs font-mono font-semibold">
+          <div className="w-7 h-10 flex items-center justify-center text-xs font-mono font-semibold" style={{ color: 'var(--text-muted)' }}>
             {ROW_LABELS[rIdx]}
           </div>
           {row.map((cell, cIdx) => {
@@ -366,28 +383,36 @@ function SetupGrid({ grid, hoveredCells, headCells, previewValid, onCellClick, o
             const isPlacedHead = cell === 'head';
             const isPlacedBody = cell === 'plane';
 
+            let bg = 'var(--cell-empty-bg)';
+            let bd = 'var(--cell-empty-bd)';
+            if (isHead) {
+              bg = previewValid ? 'var(--cell-pending-bg)' : 'rgba(239,68,68,0.3)';
+              bd = previewValid ? 'var(--cell-pending-bd)' : 'rgba(239,68,68,0.7)';
+            } else if (isHovered) {
+              bg = previewValid ? 'var(--cell-hover-bg)' : 'rgba(239,68,68,0.12)';
+              bd = previewValid ? 'var(--cell-hover-bd)' : 'rgba(239,68,68,0.4)';
+            } else if (isPlacedHead) {
+              bg = 'var(--cell-head-bg)';
+              bd = 'var(--cell-head-bd)';
+            } else if (isPlacedBody) {
+              bg = 'var(--cell-plane-bg)';
+              bd = 'var(--cell-plane-bd)';
+            }
+
             return (
               <div
                 key={cIdx}
-                className={`w-10 h-10 border rounded-sm flex items-center justify-center transition-all duration-75 cursor-crosshair ${
-                  isHead
-                    ? previewValid
-                      ? 'bg-cyan-400/40 border-cyan-300/80'
-                      : 'bg-red-500/30 border-red-400/60'
-                    : isHovered
-                    ? previewValid
-                      ? 'bg-cyan-400/15 border-cyan-400/50'
-                      : 'bg-red-500/15 border-red-400/40'
-                    : isPlacedHead
-                    ? 'bg-cyan-400/25 border-cyan-400/70'
-                    : isPlacedBody
-                    ? 'bg-navy-600/80 border-cyan-400/30'
-                    : 'bg-navy-900/50 border-navy-600/30 hover:bg-navy-700/40 hover:border-navy-400/30'
-                }`}
+                className="w-10 h-10 flex items-center justify-center transition-all duration-75"
+                style={{
+                  background: bg,
+                  border: `1px solid ${bd}`,
+                  borderRadius: 2,
+                  cursor: disabled ? 'default' : 'crosshair',
+                }}
                 onClick={() => !disabled && onCellClick(rIdx, cIdx)}
                 onMouseEnter={() => !disabled && onCellHover(rIdx, cIdx)}
               >
-                {isPlacedHead && <div className="w-2.5 h-2.5 rounded-full bg-cyan-400" />}
+                {isPlacedHead && <div className="w-2.5 h-2.5 rounded-full" style={{ background: 'var(--ind-head)' }} />}
               </div>
             );
           })}

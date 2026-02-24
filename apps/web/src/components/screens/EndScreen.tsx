@@ -39,21 +39,21 @@ export default function EndScreen() {
         className="text-center mb-8"
       >
         <div className="mb-6">
-          <div className={`inline-flex items-center justify-center w-24 h-24 rounded-full border-2 font-black text-2xl tracking-widest ${
-            state.didIWin
-              ? 'border-cyan-400/50 bg-cyan-400/10 text-cyan-400'
-              : 'border-red-400/50 bg-red-400/10 text-red-400'
-          }`}>
+        <div className={`inline-flex items-center justify-center w-24 h-24 rounded-full border-2 font-black text-2xl tracking-widest`}
+            style={{
+              borderColor: state.didIWin ? 'var(--text-accent)' : 'var(--ind-miss)',
+              background:  state.didIWin ? 'var(--cell-head-bg)' : 'var(--cell-miss-bg)',
+              color:       state.didIWin ? 'var(--text-accent)' : 'var(--ind-miss)',
+            }}>
             {state.didIWin ? 'WIN' : 'GG'}
           </div>
         </div>
-        <h1 className={`text-5xl font-bold tracking-tight mb-2 ${
-          state.didIWin ? 'text-cyan-400' : 'text-red-400'
-        }`}>
+        <h1 className="text-5xl font-bold tracking-tight mb-2"
+          style={{ color: state.didIWin ? 'var(--text-accent)' : 'var(--ind-miss)' }}>
           {state.didIWin ? t('victory') : t('defeat')}
         </h1>
         {state.winnerNickname && (
-          <p className="text-slate-400 text-base">
+          <p className="text-base" style={{ color: 'var(--text-muted)' }}>
             {state.didIWin
               ? `Felicitări, ${state.nickname}!`
               : `${state.winnerNickname} a câștigat.`
@@ -70,7 +70,7 @@ export default function EndScreen() {
           transition={{ delay: 0.3 }}
           className="glass-panel p-6 w-full max-w-sm mb-6"
         >
-          <h2 className="text-cyan-400/70 text-xs uppercase tracking-widest mb-4">{t('statsTitle')}</h2>
+          <h2 className="text-xs uppercase tracking-widest mb-4" style={{ color: 'var(--text-accent)', opacity: 0.7 }}>{t('statsTitle')}</h2>
           <div className="flex flex-col gap-3">
             <StatRow label={t('totalShots')} value={state.myStats.totalShots} />
             <StatRow label={t('hitsLabel')} value={state.myStats.hits} color="text-amber-400" />
@@ -95,22 +95,22 @@ export default function EndScreen() {
       >
         {!rematchRequested ? (
           <button className="btn-primary text-lg py-4" onClick={handleRematch}>
-            🔄 {t('rematch')}
+            {t('rematch')}
           </button>
         ) : (
           <div className="glass-panel p-4 text-center">
-            <div className="flex items-center justify-center gap-2 text-cyan-400 text-sm">
+            <div className="flex items-center justify-center gap-2 text-sm" style={{ color: 'var(--text-accent)' }}>
               <span className="relative flex h-2 w-2">
-                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-cyan-400 opacity-75"></span>
-                <span className="relative inline-flex rounded-full h-2 w-2 bg-cyan-400"></span>
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full opacity-75" style={{ background: 'var(--text-accent)' }}></span>
+                <span className="relative inline-flex rounded-full h-2 w-2" style={{ background: 'var(--text-accent)' }}></span>
               </span>
-              Aștepți confirmarea revanșei...
+              Aștepți confirmarea revanşei...
             </div>
-            <p className="text-slate-500 text-xs mt-1">{t('opponentRequestedRematch')}</p>
+            <p className="text-xs mt-1" style={{ color: 'var(--text-muted)' }}>{t('opponentRequestedRematch')}</p>
           </div>
         )}
         <button className="btn-secondary" onClick={handleHome}>
-          🏠 {t('backHome')}
+          {t('backHome')}
         </button>
       </motion.div>
     </div>

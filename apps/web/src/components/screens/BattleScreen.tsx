@@ -6,6 +6,7 @@ import { CellState } from '@avioane/shared';
 import { getSocket } from '@/lib/socket';
 import { useGame } from '@/context/GameContext';
 import { useTranslation } from '@/lib/i18n';
+import { resetSocket } from '@/lib/socket';
 
 const COL_LABELS = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H'];
 const ROW_LABELS = ['1', '2', '3', '4', '5', '6', '7', '8'];
@@ -23,7 +24,7 @@ function cellVisualState(cell: CellState, isPending: boolean, sketched: boolean)
 }
 
 export default function BattleScreen() {
-  const { state } = useGame();
+  const { state, dispatch } = useGame();
   const t = useTranslation(state.lang);
 
   const [notification, setNotification] = useState<{
@@ -31,6 +32,8 @@ export default function BattleScreen() {
     type: 'miss' | 'hit' | 'dead' | 'info';
   } | null>(null);
   const notifTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const [abandonConfirm, setAbandonConfirm] = useState(false);
+  const abandonTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const [sketchMap, setSketchMap] = useState<SketchMap>({});
   const [pendingCell, setPendingCell] = useState<{ row: number; col: number } | null>(null);
@@ -60,6 +63,18 @@ export default function BattleScreen() {
     setNotification({ text, type });
     if (notifTimerRef.current) clearTimeout(notifTimerRef.current);
     notifTimerRef.current = setTimeout(() => setNotification(null), 2500);
+  }
+
+  function handleAbandon() {
+    if (!abandonConfirm) {
+      setAbandonConfirm(true);
+      if (abandonTimerRef.current) clearTimeout(abandonTimerRef.current);
+      abandonTimerRef.current = setTimeout(() => setAbandonConfirm(false), 3500);
+      return;
+    }
+    getSocket().emit('leave_room');
+    resetSocket();
+    dispatch({ type: 'RESET' });
   }
 
   function handleShoot(row: number, col: number) {
@@ -102,6 +117,18 @@ export default function BattleScreen() {
 
       {/* Header */}
       <div className="flex items-center gap-3 mb-4 text-sm">
+        <button
+          onClick={handleAbandon}
+          className="text-xs px-3 py-1 rounded transition-all"
+          style={{
+            color: abandonConfirm ? '#fff' : 'var(--text-muted)',
+            background: abandonConfirm ? 'var(--ind-miss)' : 'transparent',
+            border: `1px solid ${abandonConfirm ? 'var(--ind-miss)' : 'var(--bg-panel-border)'}`,
+          }}
+          title="Părăseşte meciul"
+        >
+          {abandonConfirm ? 'Sigur?' : '← Abandon'}
+        </button>
         <span style={{ color: 'var(--text-accent)', fontWeight: 700 }}>{state.nickname}</span>
         <span style={{ color: 'var(--text-muted)' }}>vs</span>
         <span style={{ color: 'var(--text-primary)', fontWeight: 600 }}>{state.opponentNickname}</span>
