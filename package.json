@@ -7,7 +7,8 @@
   ],
   "scripts": {
     "dev": "concurrently \"npm run dev --workspace=apps/server\" \"npm run dev --workspace=apps/web\"",
-    "build": "npm run build --workspace=packages/shared && npm run build --workspace=apps/server && npm run build --workspace=apps/web"
+    "build": "npm run build --workspace=packages/shared && npm run build --workspace=apps/server && npm run build --workspace=apps/web",
+    "vercel-build": "cd packages/shared && npm run build && cd ../../apps/web && npm run build"
   },
   "devDependencies": {
     "concurrently": "^8.2.2",
