@@ -1,12 +1,13 @@
 'use client';
 
-import React, { createContext, useContext, useReducer, useCallback } from 'react';
+import React, { createContext, useContext, useReducer, useEffect } from 'react';
 import { CellState, Plane, GRID_SIZE } from '@avioane/shared';
 
 // ─── Starea jocului ───────────────────────────────────────────────────────────
 
 export type AppPhase = 'home' | 'setup' | 'battle' | 'finished';
 export type Language = 'ro' | 'en';
+export type Theme = 'blueprint' | 'caiet';
 
 export interface ShotNotification {
   row: number;
@@ -32,6 +33,7 @@ export interface GameState {
   myStats: { hits: number; misses: number; totalShots: number } | null;
   lastShot: ShotNotification | null;
   lastIncoming: ShotNotification | null;
+  theme: Theme;
 }
 
 function emptyGrid(): CellState[][] {
@@ -41,6 +43,7 @@ function emptyGrid(): CellState[][] {
 const initialState: GameState = {
   phase: 'home',
   lang: 'ro',
+  theme: 'blueprint',
   roomCode: null,
   playerId: null,
   nickname: '',
@@ -74,6 +77,7 @@ type Action =
   | { type: 'TURN_CHANGE'; isMyTurn: boolean }
   | { type: 'GAME_OVER'; winnerNickname: string; didIWin: boolean; myStats: GameState['myStats'] }
   | { type: 'REMATCH_START'; isMyTurn: boolean }
+  | { type: 'SET_THEME'; theme: Theme }
   | { type: 'RESET' };
 
 // ─── Reducer ──────────────────────────────────────────────────────────────────
@@ -86,6 +90,9 @@ function reducer(state: GameState, action: Action): GameState {
 
     case 'SET_LANG':
       return { ...state, lang: action.lang };
+
+    case 'SET_THEME':
+      return { ...state, theme: action.theme };
 
     case 'ROOM_CREATED':
       return {
@@ -206,7 +213,20 @@ interface GameContextValue {
 const GameContext = createContext<GameContextValue | null>(null);
 
 export function GameProvider({ children }: { children: React.ReactNode }) {
-  const [state, dispatch] = useReducer(reducer, initialState);
+  const [state, dispatch] = useReducer(reducer, undefined, () => {
+    let theme: Theme = 'blueprint';
+    if (typeof window !== 'undefined') {
+      const saved = localStorage.getItem('avioane-theme');
+      if (saved === 'caiet') theme = 'caiet';
+    }
+    return { ...initialState, theme };
+  });
+
+  useEffect(() => {
+    document.documentElement.dataset.theme = state.theme;
+    localStorage.setItem('avioane-theme', state.theme);
+  }, [state.theme]);
+
   return (
     <GameContext.Provider value={{ state, dispatch }}>
       {children}

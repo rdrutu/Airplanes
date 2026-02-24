@@ -15,6 +15,13 @@ type ShotState = { row: number; col: number; result: 'miss' | 'hit' | 'dead' } |
 
 const HOLD_DURATION = 350;
 
+function cellVisualState(cell: CellState, isPending: boolean, sketched: boolean): string {
+  if (cell !== 'empty') return cell;
+  if (isPending) return 'pending';
+  if (sketched) return 'sketch';
+  return 'empty';
+}
+
 export default function BattleScreen() {
   const { state } = useGame();
   const t = useTranslation(state.lang);
@@ -26,25 +33,18 @@ export default function BattleScreen() {
   const notifTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const [sketchMap, setSketchMap] = useState<SketchMap>({});
-  // Celula in zbor (shot trimis, asteptam rezultatul)
   const [pendingCell, setPendingCell] = useState<{ row: number; col: number } | null>(null);
-  // Previne dublu-click
   const isFiringRef = useRef(false);
 
   useEffect(() => {
     if (!state.lastShot) return;
     isFiringRef.current = false;
     setPendingCell(null);
-    // Sterge schita DOAR daca a ratat  daca a lovit, X-ul acopera celula oricum
     if (state.lastShot.result === 'miss') {
       const key = `${state.lastShot.row},${state.lastShot.col}`;
       setSketchMap(prev => { const n = { ...prev }; delete n[key]; return n; });
     }
-    const msgs: Record<string, string> = {
-      miss: t('miss'),
-      hit: t('hit'),
-      dead: t('dead'),
-    };
+    const msgs: Record<string, string> = { miss: t('miss'), hit: t('hit'), dead: t('dead') };
     showNotification(msgs[state.lastShot.result], state.lastShot.result);
   }, [state.lastShot]);
 
@@ -70,7 +70,6 @@ export default function BattleScreen() {
     setPendingCell({ row, col });
     getSocket().emit('shoot', { row, col }, (res) => {
       if (!res.ok) {
-        // Shot respins (ex: ai mai tras acolo) - reset silentios
         isFiringRef.current = false;
         setPendingCell(null);
       }
@@ -91,11 +90,11 @@ export default function BattleScreen() {
   const myHits   = state.shotsGrid.flat().filter(c => c === 'hit' || c === 'dead').length;
   const myMisses = state.shotsGrid.flat().filter(c => c === 'miss').length;
 
-  const notifStyle: Record<string, string> = {
-    miss: 'text-slate-300 border-slate-500/40',
-    hit:  'text-amber-300 border-amber-400/50',
-    dead: 'text-red-400  border-red-400/50',
-    info: 'text-cyan-400 border-cyan-400/40',
+  const notifColors: Record<string, string> = {
+    miss: 'var(--ind-miss)',
+    hit:  'var(--ind-hit)',
+    dead: 'var(--ind-dead)',
+    info: 'var(--text-accent)',
   };
 
   return (
@@ -103,12 +102,12 @@ export default function BattleScreen() {
 
       {/* Header */}
       <div className="flex items-center gap-3 mb-4 text-sm">
-        <span className="text-cyan-300 font-bold">{state.nickname}</span>
-        <span className="text-slate-600">vs</span>
-        <span className="text-slate-300 font-bold">{state.opponentNickname}</span>
+        <span style={{ color: 'var(--text-accent)', fontWeight: 700 }}>{state.nickname}</span>
+        <span style={{ color: 'var(--text-muted)' }}>vs</span>
+        <span style={{ color: 'var(--text-primary)', fontWeight: 600 }}>{state.opponentNickname}</span>
       </div>
 
-      {/* Rand indicator */}
+      {/* Turn indicator */}
       <AnimatePresence mode="wait">
         <motion.div
           key={state.isMyTurn ? 'myturn' : 'wait'}
@@ -130,11 +129,12 @@ export default function BattleScreen() {
         {notification && (
           <motion.div
             key={notification.text}
-            initial={{ opacity: 0, scale: 0.8, y: -16 }}
+            initial={{ opacity: 0, scale: 0.85, y: -16 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
-            exit={{ opacity: 0, scale: 0.8, y: -16 }}
+            exit={{ opacity: 0, scale: 0.85, y: -16 }}
             transition={{ type: 'spring', stiffness: 380, damping: 22 }}
-            className={`fixed top-6 left-1/2 -translate-x-1/2 z-50 glass-panel px-8 py-3 text-xl font-bold tracking-wide border ${notifStyle[notification.type]}`}
+            className="fixed top-6 left-1/2 -translate-x-1/2 z-50 glass-panel px-8 py-3 text-xl font-bold tracking-wide"
+            style={{ color: notifColors[notification.type] }}
           >
             {notification.text}
           </motion.div>
@@ -144,15 +144,15 @@ export default function BattleScreen() {
       {/* Grids */}
       <div className="flex flex-col lg:flex-row gap-6 items-start justify-center">
 
-        {/* Tinte */}
+        {/* Target grid */}
         <div className="glass-panel p-4">
           <div className="flex items-center justify-between mb-3">
-            <span className="text-cyan-400/70 text-xs font-bold uppercase tracking-widest">
+            <span style={{ color: 'var(--text-accent)', opacity: 0.75 }} className="text-xs font-bold uppercase tracking-widest">
               {t('battleTargets')}
             </span>
-            <span className="text-xs text-slate-500">
-              <span className="text-amber-400 font-bold">{myHits}</span>
-              <span className="text-slate-600"> / {myHits + myMisses}</span>
+            <span className="text-xs" style={{ color: 'var(--text-muted)' }}>
+              <span style={{ color: 'var(--cell-hit-bd)', fontWeight: 700 }}>{myHits}</span>
+              <span> / {myHits + myMisses}</span>
             </span>
           </div>
           <TargetGrid
@@ -166,10 +166,10 @@ export default function BattleScreen() {
           />
         </div>
 
-        {/* Flota proprie */}
+        {/* Fleet grid */}
         <div className="glass-panel p-4">
           <div className="mb-3">
-            <span className="text-slate-400/70 text-xs font-bold uppercase tracking-widest">
+            <span style={{ color: 'var(--text-muted)', opacity: 0.8 }} className="text-xs font-bold uppercase tracking-widest">
               {t('battleFleet')}
             </span>
           </div>
@@ -178,23 +178,26 @@ export default function BattleScreen() {
       </div>
 
       {/* Stats */}
-      <div className="mt-5 flex gap-6 text-xs text-slate-500">
-        <span>Lovit: <span className="text-amber-400 font-bold">{myHits}</span></span>
-        <span>Ratat: <span className="font-bold">{myMisses}</span></span>
+      <div className="mt-5 flex gap-6 text-xs" style={{ color: 'var(--text-muted)' }}>
+        <span>Lovit: <span style={{ color: 'var(--cell-hit-bd)', fontWeight: 700 }}>{myHits}</span></span>
+        <span>Ratat: <span style={{ fontWeight: 700 }}>{myMisses}</span></span>
         {myHits + myMisses > 0 && (
           <span>
             Precizie:{' '}
-            <span className="text-cyan-400 font-bold">
+            <span style={{ color: 'var(--text-accent)', fontWeight: 700 }}>
               {Math.round((myHits / (myHits + myMisses)) * 100)}%
             </span>
           </span>
         )}
         {Object.keys(sketchMap).length > 0 && (
           <span>
-            Marcate: <span className="text-violet-400 font-bold">{Object.keys(sketchMap).length}</span>
+            Marcate: <span style={{ color: 'var(--ind-sketch)', fontWeight: 700 }}>{Object.keys(sketchMap).length}</span>
             <button
               onClick={() => setSketchMap({})}
-              className="ml-2 text-slate-600 hover:text-red-400 transition-colors"
+              className="ml-2 transition-colors"
+              style={{ color: 'var(--text-muted)' }}
+              onMouseEnter={e => (e.currentTarget.style.color = 'var(--ind-dead)')}
+              onMouseLeave={e => (e.currentTarget.style.color = 'var(--text-muted)')}
               title="Sterge toate marcajele"
             >
               x
@@ -206,7 +209,7 @@ export default function BattleScreen() {
   );
 }
 
-//  Target Grid 
+//  TargetCell 
 
 interface TargetGridProps {
   grid: CellState[][];
@@ -238,37 +241,26 @@ function TargetCell({
       onSketch(row, col);
     }, HOLD_DURATION);
   }
-
   function cancelHold() {
     if (holdTimer.current) clearTimeout(holdTimer.current);
   }
-
   function handleClick() {
     if (didHold.current) return;
     if (cell !== 'empty') return;
     if (interactive) onShoot(row, col);
   }
-
   function handleContextMenu(e: React.MouseEvent) {
     e.preventDefault();
     if (cell === 'empty') onSketch(row, col);
   }
 
-  const isEmpty = cell === 'empty';
-
-  const bg =
-    cell === 'dead'  ? 'bg-red-800/70 border-red-500/80' :
-    cell === 'hit'   ? 'bg-amber-700/60 border-amber-400/80' :
-    cell === 'miss'  ? 'bg-slate-800/70 border-slate-600/50' :
-    isPending        ? 'bg-cyan-500/25 border-cyan-400/80' :
-    sketched         ? 'bg-violet-600/20 border-violet-400/60 hover:bg-violet-600/30 cursor-pointer' :
-    isEmpty && interactive
-                     ? 'bg-navy-900/50 border-navy-600/30 hover:bg-navy-700/40 hover:border-cyan-400/30 cursor-crosshair' :
-                       'bg-navy-900/50 border-navy-600/30 hover:bg-navy-800/60 cursor-pointer';
+  const vState = cellVisualState(cell, isPending, sketched);
 
   return (
     <motion.div
-      className={`w-10 h-10 border rounded-sm flex items-center justify-center select-none transition-colors ${bg}`}
+      className="grid-cell"
+      data-state={vState}
+      data-interactive={interactive && cell === 'empty' ? 'true' : 'false'}
       onMouseDown={startHold}
       onMouseUp={() => { cancelHold(); handleClick(); }}
       onMouseLeave={cancelHold}
@@ -282,27 +274,28 @@ function TargetCell({
       }
     >
       {cell === 'miss' && (
-        <span className="text-slate-300 font-bold text-xl leading-none select-none"></span>
+        <span className="ind-miss font-bold text-xl leading-none select-none"></span>
       )}
       {(cell === 'hit' || cell === 'dead') && (
         <motion.span
           initial={{ scale: 0, rotate: -20 }}
           animate={{ scale: 1, rotate: 0 }}
           transition={{ type: 'spring', stiffness: 400, damping: 18 }}
-          className={`font-black text-xl leading-none select-none ${cell === 'dead' ? 'text-red-200' : 'text-white'}`}
+          className={`font-black text-xl leading-none select-none ${cell === 'dead' ? 'ind-dead' : 'ind-hit'}`}
         >
           X
         </motion.span>
       )}
-      {isEmpty && isPending && (
+      {vState === 'pending' && (
         <motion.div
-          className="w-3 h-3 rounded-full bg-cyan-400"
+          className="w-3 h-3 rounded-full"
+          style={{ background: 'var(--text-accent)' }}
           animate={{ opacity: [1, 0.3, 1] }}
           transition={{ duration: 0.6, repeat: Infinity }}
         />
       )}
-      {isEmpty && !isPending && sketched && (
-        <div className="w-2.5 h-2.5 rounded-full bg-violet-400/80" />
+      {vState === 'sketch' && (
+        <div className="w-2.5 h-2.5 rounded-full" style={{ background: 'var(--ind-sketch)', opacity: 0.8 }} />
       )}
     </motion.div>
   );
@@ -313,14 +306,14 @@ function TargetGrid({ grid, interactive, sketchMap, onShoot, onSketch, lastShot,
     <div className="select-none">
       <div className="flex mb-1 ml-7">
         {COL_LABELS.map(l => (
-          <div key={l} className="w-10 h-5 flex items-center justify-center text-slate-600 text-xs font-mono font-semibold">
+          <div key={l} className="w-10 h-5 flex items-center justify-center text-xs font-mono font-semibold" style={{ color: 'var(--text-muted)' }}>
             {l}
           </div>
         ))}
       </div>
       {grid.map((row, rIdx) => (
         <div key={rIdx} className="flex">
-          <div className="w-7 h-10 flex items-center justify-center text-slate-600 text-xs font-mono font-semibold">
+          <div className="w-7 h-10 flex items-center justify-center text-xs font-mono font-semibold" style={{ color: 'var(--text-muted)' }}>
             {ROW_LABELS[rIdx]}
           </div>
           {row.map((cell, cIdx) => (
@@ -344,7 +337,7 @@ function TargetGrid({ grid, interactive, sketchMap, onShoot, onSketch, lastShot,
   );
 }
 
-//  Fleet Grid 
+//  FleetGrid 
 
 interface FleetGridProps {
   grid: CellState[][];
@@ -356,47 +349,41 @@ function FleetGrid({ grid, lastIncoming }: FleetGridProps) {
     <div className="select-none">
       <div className="flex mb-1 ml-7">
         {COL_LABELS.map(l => (
-          <div key={l} className="w-10 h-5 flex items-center justify-center text-slate-600 text-xs font-mono font-semibold">
+          <div key={l} className="w-10 h-5 flex items-center justify-center text-xs font-mono font-semibold" style={{ color: 'var(--text-muted)' }}>
             {l}
           </div>
         ))}
       </div>
       {grid.map((row, rIdx) => (
         <div key={rIdx} className="flex">
-          <div className="w-7 h-10 flex items-center justify-center text-slate-600 text-xs font-mono font-semibold">
+          <div className="w-7 h-10 flex items-center justify-center text-xs font-mono font-semibold" style={{ color: 'var(--text-muted)' }}>
             {ROW_LABELS[rIdx]}
           </div>
           {row.map((cell, cIdx) => {
             const isLastHit = lastIncoming?.row === rIdx && lastIncoming?.col === cIdx;
-            const bg =
-              cell === 'dead'  ? 'bg-red-800/70 border-red-500/80' :
-              cell === 'hit'   ? 'bg-amber-700/60 border-amber-400/80' :
-              cell === 'miss'  ? 'bg-slate-800/70 border-slate-600/50' :
-              cell === 'head'  ? 'bg-cyan-500/25 border-cyan-400/60' :
-              cell === 'plane' ? 'bg-slate-700/40 border-slate-500/30' :
-                                 'bg-navy-900/50 border-navy-600/30';
             return (
               <motion.div
                 key={cIdx}
-                className={`w-10 h-10 border rounded-sm flex items-center justify-center ${bg}`}
+                className="grid-cell"
+                data-state={cell}
                 animate={isLastHit ? { scale: [1, 1.25, 1] } : {}}
                 transition={{ duration: 0.3 }}
               >
                 {cell === 'miss' && (
-                  <span className="text-slate-300 font-bold text-xl leading-none"></span>
+                  <span className="ind-miss font-bold text-xl leading-none"></span>
                 )}
                 {(cell === 'hit' || cell === 'dead') && (
                   <motion.span
                     initial={{ scale: 0 }}
                     animate={{ scale: 1 }}
                     transition={{ type: 'spring', stiffness: 400 }}
-                    className={`font-black text-xl leading-none ${cell === 'dead' ? 'text-red-200' : 'text-white'}`}
+                    className={`font-black text-xl leading-none ${cell === 'dead' ? 'ind-dead' : 'ind-hit'}`}
                   >
                     X
                   </motion.span>
                 )}
                 {cell === 'head' && (
-                  <div className="w-2.5 h-2.5 rounded-full bg-cyan-400/90" />
+                  <div className="w-2.5 h-2.5 rounded-full" style={{ background: 'var(--ind-head)' }} />
                 )}
               </motion.div>
             );

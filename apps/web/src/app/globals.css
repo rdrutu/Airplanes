@@ -1,85 +1,226 @@
-@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&display=swap');
+﻿@import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=JetBrains+Mono:wght@400;500;600;700&display=swap');
 
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
+/* 
+   CSS VARIABLES  Blueprint (default)
+ */
 :root {
-  --grid-line: rgba(34, 211, 238, 0.12);
-  --cell-empty: rgba(13, 31, 60, 0.6);
+  --font-body: 'JetBrains Mono', 'Fira Code', monospace;
+  --bg-body: #020818;
+  --bg-panel: rgba(13, 31, 60, 0.6);
+  --bg-panel-border: rgba(34, 211, 238, 0.10);
+  --text-primary: #e2e8f0;
+  --text-muted: #475569;
+  --text-accent: #22d3ee;
+  --text-accent-hover: #67e8f9;
+  --btn-primary-bg: #22d3ee;
+  --btn-primary-text: #020818;
+  --btn-primary-hover: #67e8f9;
+  --btn-secondary-bg: #162a4a;
+  --btn-secondary-text: #22d3ee;
+  --btn-secondary-border: rgba(34, 211, 238, 0.20);
+  --btn-secondary-hover: #1e3a5f;
+  --input-bg: #0a1628;
+  --input-border: #162a4a;
+  --input-focus: rgba(34, 211, 238, 0.6);
+  --badge-turn-bg: rgba(34, 211, 238, 0.20);
+  --badge-turn-text: #22d3ee;
+  --badge-turn-border: rgba(34, 211, 238, 0.40);
+  --badge-wait-bg: #162a4a;
+  --badge-wait-text: #94a3b8;
+  --badge-wait-border: #1e3a5f;
+  /* Grid cell colors */
+  --cell-empty-bg:   rgba(10, 22, 40, 0.5);
+  --cell-empty-bd:   rgba(30, 58, 95, 0.3);
+  --cell-hover-bg:   rgba(22, 42, 74, 0.5);
+  --cell-hover-bd:   rgba(34, 211, 238, 0.3);
+  --cell-hit-bg:     rgba(180, 83, 9, 0.6);
+  --cell-hit-bd:     rgba(251, 191, 36, 0.8);
+  --cell-miss-bg:    rgba(30, 41, 59, 0.7);
+  --cell-miss-bd:    rgba(100, 116, 139, 0.5);
+  --cell-dead-bg:    rgba(127, 29, 29, 0.7);
+  --cell-dead-bd:    rgba(239, 68, 68, 0.8);
+  --cell-plane-bg:   rgba(22, 42, 74, 0.6);
+  --cell-plane-bd:   rgba(34, 211, 238, 0.2);
+  --cell-head-bg:    rgba(34, 211, 238, 0.25);
+  --cell-head-bd:    rgba(34, 211, 238, 0.6);
+  --cell-sketch-bg:  rgba(109, 40, 217, 0.2);
+  --cell-sketch-bd:  rgba(167, 139, 250, 0.6);
+  --cell-pending-bg: rgba(34, 211, 238, 0.2);
+  --cell-pending-bd: rgba(34, 211, 238, 0.9);
+  /* Indicators */
+  --ind-miss:   #94a3b8;
+  --ind-hit:    #ffffff;
+  --ind-dead:   #fecaca;
+  --ind-head:   #22d3ee;
+  --ind-sketch: #a78bfa;
+  /* Background pattern */
+  --grid-pattern:
+    linear-gradient(rgba(34, 211, 238, 0.04) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(34, 211, 238, 0.04) 1px, transparent 1px);
+  --grid-size: 40px 40px;
+  --radial-overlay: radial-gradient(ellipse 80% 60% at 50% 0%, rgba(34, 211, 238, 0.06) 0%, transparent 70%);
 }
 
-* {
-  box-sizing: border-box;
+/* 
+   CSS VARIABLES  Caiet (Notebook)
+ */
+[data-theme="caiet"] {
+  --font-body: 'Nunito', 'Segoe UI', sans-serif;
+  --bg-body: #f5f0e4;
+  --bg-panel: rgba(255, 255, 255, 0.93);
+  --bg-panel-border: rgba(147, 197, 253, 0.55);
+  --text-primary: #1e293b;
+  --text-muted: #6b7280;
+  --text-accent: #1d4ed8;
+  --text-accent-hover: #1e40af;
+  --btn-primary-bg: #1d4ed8;
+  --btn-primary-text: #ffffff;
+  --btn-primary-hover: #1e40af;
+  --btn-secondary-bg: #ffffff;
+  --btn-secondary-text: #1d4ed8;
+  --btn-secondary-border: rgba(29, 78, 216, 0.30);
+  --btn-secondary-hover: #eff6ff;
+  --input-bg: #ffffff;
+  --input-border: rgba(147, 197, 253, 0.7);
+  --input-focus: rgba(29, 78, 216, 0.5);
+  --badge-turn-bg: rgba(29, 78, 216, 0.12);
+  --badge-turn-text: #1d4ed8;
+  --badge-turn-border: rgba(29, 78, 216, 0.40);
+  --badge-wait-bg: rgba(229, 231, 235, 0.85);
+  --badge-wait-text: #6b7280;
+  --badge-wait-border: rgba(156, 163, 175, 0.5);
+  /* Grid cell colors */
+  --cell-empty-bg:   rgba(255, 253, 247, 0.97);
+  --cell-empty-bd:   rgba(147, 197, 253, 0.7);
+  --cell-hover-bg:   rgba(219, 234, 254, 0.75);
+  --cell-hover-bd:   rgba(29, 78, 216, 0.45);
+  --cell-hit-bg:     rgba(254, 226, 226, 0.97);
+  --cell-hit-bd:     rgba(220, 38, 38, 0.6);
+  --cell-miss-bg:    rgba(248, 250, 252, 0.97);
+  --cell-miss-bd:    rgba(148, 163, 184, 0.55);
+  --cell-dead-bg:    rgba(254, 202, 202, 0.99);
+  --cell-dead-bd:    rgba(185, 28, 28, 0.7);
+  --cell-plane-bg:   rgba(219, 234, 254, 0.92);
+  --cell-plane-bd:   rgba(29, 78, 216, 0.22);
+  --cell-head-bg:    rgba(147, 197, 253, 0.85);
+  --cell-head-bd:    rgba(29, 78, 216, 0.55);
+  --cell-sketch-bg:  rgba(233, 213, 255, 0.85);
+  --cell-sketch-bd:  rgba(139, 92, 246, 0.5);
+  --cell-pending-bg: rgba(191, 219, 254, 0.9);
+  --cell-pending-bd: rgba(29, 78, 216, 0.8);
+  /* Indicators */
+  --ind-miss:   #9ca3af;
+  --ind-hit:    #dc2626;
+  --ind-dead:   #991b1b;
+  --ind-head:   #1d4ed8;
+  --ind-sketch: #7c3aed;
+  /* Background pattern  linii de caiet */
+  --grid-pattern:
+    repeating-linear-gradient(
+      transparent,
+      transparent 39px,
+      rgba(147, 197, 253, 0.5) 39px,
+      rgba(147, 197, 253, 0.5) 40px
+    ),
+    linear-gradient(
+      to right,
+      transparent 55px,
+      rgba(239, 68, 68, 0.18) 55px,
+      rgba(239, 68, 68, 0.18) 57px,
+      transparent 57px
+    );
+  --grid-size: auto;
+  --radial-overlay: none;
 }
+
+/* 
+   BASE STYLES
+ */
+* { box-sizing: border-box; }
 
 html, body {
   min-height: 100vh;
-  background-color: #020818;
-  color: #e2e8f0;
-  font-family: 'JetBrains Mono', 'Fira Code', monospace;
+  background-color: var(--bg-body);
+  color: var(--text-primary);
+  font-family: var(--font-body);
   overflow-x: hidden;
+  transition: background-color 0.4s ease, color 0.3s ease;
 }
 
-/* Fundal cu rețea de linii — "Blueprint" */
 body::before {
   content: '';
   position: fixed;
   inset: 0;
-  background-image:
-    linear-gradient(rgba(34, 211, 238, 0.04) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(34, 211, 238, 0.04) 1px, transparent 1px);
-  background-size: 40px 40px;
+  background-image: var(--grid-pattern);
+  background-size: var(--grid-size);
   pointer-events: none;
   z-index: 0;
 }
 
-/* Gradient radial în centru */
 body::after {
   content: '';
   position: fixed;
   inset: 0;
-  background: radial-gradient(ellipse 80% 60% at 50% 0%, rgba(34, 211, 238, 0.06) 0%, transparent 70%);
+  background: var(--radial-overlay);
   pointer-events: none;
   z-index: 0;
 }
 
-#__next, main {
-  position: relative;
-  z-index: 1;
-}
+#__next, main { position: relative; z-index: 1; }
 
-/* Scrollbar custom */
-::-webkit-scrollbar {
-  width: 6px;
-}
-::-webkit-scrollbar-track {
-  background: #0a1628;
-}
-::-webkit-scrollbar-thumb {
-  background: #1e3a5f;
-  border-radius: 3px;
-}
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: var(--bg-body); }
+::-webkit-scrollbar-thumb { background: var(--cell-plane-bd); border-radius: 3px; }
 
-/* Utility classes */
+/* Tailwind class overrides for caiet theme */
+[data-theme="caiet"] .text-cyan-400,
+[data-theme="caiet"] .text-cyan-300 { color: var(--text-accent) !important; }
+[data-theme="caiet"] .text-cyan-400\/70 { color: rgba(29, 78, 216, 0.7) !important; }
+[data-theme="caiet"] .text-slate-400\/70 { color: rgba(71, 85, 105, 0.7) !important; }
+[data-theme="caiet"] .text-slate-400 { color: var(--text-muted) !important; }
+[data-theme="caiet"] .text-slate-500,
+[data-theme="caiet"] .text-slate-600 { color: rgba(107, 114, 128, 0.9) !important; }
+[data-theme="caiet"] .text-slate-300 { color: var(--text-primary) !important; }
+[data-theme="caiet"] .hover\:text-cyan-400:hover { color: var(--text-accent) !important; }
+[data-theme="caiet"] .border-navy-600,
+[data-theme="caiet"] .border-navy-500 { border-color: var(--input-border) !important; }
+[data-theme="caiet"] .hover\:border-cyan-400\/30:hover { border-color: rgba(29, 78, 216, 0.35) !important; }
+[data-theme="caiet"] .bg-cyan-400\/10 { background: rgba(219, 234, 254, 0.6) !important; }
+[data-theme="caiet"] .border-cyan-400\/20 { border-color: var(--bg-panel-border) !important; }
+[data-theme="caiet"] .text-amber-400 { color: #b45309 !important; }
+[data-theme="caiet"] .text-red-400 { color: #dc2626 !important; }
+[data-theme="caiet"] .text-violet-400 { color: #7c3aed !important; }
+
+/* 
+   COMPONENT CLASSES
+ */
 @layer components {
   .glass-panel {
-    @apply bg-navy-800/60 backdrop-blur-sm border border-cyan-400/10 rounded-xl;
+    background: var(--bg-panel);
+    border: 1px solid var(--bg-panel-border);
+    @apply backdrop-blur-sm rounded-xl;
   }
 
   .btn-primary {
-    @apply bg-cyan-400 text-navy-950 font-bold px-6 py-3 rounded-lg
-           hover:bg-cyan-300 active:scale-95 transition-all duration-150
+    background: var(--btn-primary-bg);
+    color: var(--btn-primary-text);
+    @apply font-bold px-6 py-3 rounded-lg active:scale-95 transition-all duration-150
            disabled:opacity-40 disabled:cursor-not-allowed disabled:active:scale-100;
   }
+  .btn-primary:hover:not(:disabled) { background: var(--btn-primary-hover); }
 
   .btn-secondary {
-    @apply bg-navy-700 text-cyan-400 font-semibold px-6 py-3 rounded-lg
-           border border-cyan-400/20
-           hover:bg-navy-600 hover:border-cyan-400/40 active:scale-95
-           transition-all duration-150
+    background: var(--btn-secondary-bg);
+    color: var(--btn-secondary-text);
+    border: 1px solid var(--btn-secondary-border);
+    @apply font-semibold px-6 py-3 rounded-lg active:scale-95 transition-all duration-150
            disabled:opacity-40 disabled:cursor-not-allowed;
   }
+  .btn-secondary:hover:not(:disabled) { background: var(--btn-secondary-hover); }
 
   .btn-danger {
     @apply bg-red-600/80 text-white font-semibold px-6 py-3 rounded-lg
@@ -87,20 +228,74 @@ body::after {
   }
 
   .input-field {
-    @apply bg-navy-900 border border-navy-600 text-slate-100 rounded-lg px-4 py-3
-           placeholder-slate-500 focus:outline-none focus:border-cyan-400/60
-           focus:ring-1 focus:ring-cyan-400/30 transition-all duration-150 w-full;
+    background: var(--input-bg);
+    border: 1px solid var(--input-border);
+    color: var(--text-primary);
+    @apply rounded-lg px-4 py-3 focus:outline-none transition-all duration-150 w-full;
+  }
+  .input-field::placeholder { color: var(--text-muted); }
+  .input-field:focus {
+    border-color: var(--input-focus);
+    box-shadow: 0 0 0 1px var(--input-focus);
   }
 
   .badge-turn {
     @apply px-3 py-1 rounded-full text-xs font-bold tracking-wider uppercase;
   }
-
   .badge-your-turn {
-    @apply badge-turn bg-cyan-400/20 text-cyan-400 border border-cyan-400/40 animate-pulse;
+    background: var(--badge-turn-bg);
+    color: var(--badge-turn-text);
+    border: 1px solid var(--badge-turn-border);
+    @apply badge-turn animate-pulse;
+  }
+  .badge-wait {
+    background: var(--badge-wait-bg);
+    color: var(--badge-wait-text);
+    border: 1px solid var(--badge-wait-border);
+    @apply badge-turn;
   }
 
-  .badge-wait {
-    @apply badge-turn bg-navy-700 text-slate-400 border border-navy-500;
+  /* Base grid cell  sizing only */
+  .grid-cell {
+    @apply w-10 h-10 flex items-center justify-center select-none;
+    border: 1px solid;
+    border-radius: 2px;
+    transition: background-color 0.1s, border-color 0.1s;
   }
+}
+
+/* 
+   CELL STATE COLORS
+ */
+.grid-cell[data-state="empty"]  { background: var(--cell-empty-bg); border-color: var(--cell-empty-bd); }
+.grid-cell[data-state="hit"]    { background: var(--cell-hit-bg);   border-color: var(--cell-hit-bd);   }
+.grid-cell[data-state="miss"]   { background: var(--cell-miss-bg);  border-color: var(--cell-miss-bd);  }
+.grid-cell[data-state="dead"]   { background: var(--cell-dead-bg);  border-color: var(--cell-dead-bd);  }
+.grid-cell[data-state="plane"]  { background: var(--cell-plane-bg); border-color: var(--cell-plane-bd); }
+.grid-cell[data-state="head"]   { background: var(--cell-head-bg);  border-color: var(--cell-head-bd);  }
+.grid-cell[data-state="sketch"] { background: var(--cell-sketch-bg);border-color: var(--cell-sketch-bd); cursor: pointer; }
+.grid-cell[data-state="pending"]{ background: var(--cell-pending-bg);border-color: var(--cell-pending-bd); }
+
+.grid-cell[data-state="empty"][data-interactive="true"]  { cursor: crosshair; }
+.grid-cell[data-state="empty"]:hover,
+.grid-cell[data-state="sketch"]:hover {
+  background: var(--cell-hover-bg);
+  border-color: var(--cell-hover-bd);
+}
+
+/* Indicator colours */
+.ind-miss   { color: var(--ind-miss); }
+.ind-hit    { color: var(--ind-hit); }
+.ind-dead   { color: var(--ind-dead); }
+.ind-head   { color: var(--ind-head); }
+.ind-sketch { color: var(--ind-sketch); }
+
+/* 
+   ANIMATIONS
+ */
+@keyframes fadeIn   { from { opacity: 0; } to { opacity: 1; } }
+@keyframes slideUp  { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+@keyframes glowPulse {
+  0%, 100% { box-shadow: 0 0 8px rgba(34, 211, 238, 0.3); }
+  50%       { box-shadow: 0 0 20px rgba(34, 211, 238, 0.6); }
 }

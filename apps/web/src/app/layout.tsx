@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import './globals.css';
 import { GameProvider } from '@/context/GameContext';
+import ThemeToggle from '@/components/ThemeToggle';
 
 export const metadata: Metadata = {
   title: 'Avioane Online',
@@ -15,6 +16,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     <html lang="ro">
       <body suppressHydrationWarning>
         <GameProvider>
+          <ThemeToggle />
           {children}
         </GameProvider>
       </body>
