@@ -21,18 +21,13 @@ import {
 // ─── Setup Express + Socket.io ───────────────────────────────────────────────
 
 const app = express();
-
-// În producție setează ALLOWED_ORIGIN=https://avioane.vercel.app (sau domeniul tău)
-const allowedOrigin = process.env.ALLOWED_ORIGIN || '*';
-
-app.use(cors({ origin: allowedOrigin }));
+app.use(cors({ origin: '*' }));
 app.use(express.json());
-app.get('/health', (_req, res) => res.json({ ok: true }));
 
 const httpServer = http.createServer(app);
 
 const io = new Server<ClientToServerEvents, ServerToClientEvents>(httpServer, {
-  cors: { origin: allowedOrigin, methods: ['GET', 'POST'] },
+  cors: { origin: '*', methods: ['GET', 'POST'] },
 });
 
 // ─── Stocaj în memorie ────────────────────────────────────────────────────────
