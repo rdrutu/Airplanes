@@ -37,12 +37,12 @@
   --cell-empty-bd:   rgba(30, 58, 95, 0.3);
   --cell-hover-bg:   rgba(22, 42, 74, 0.5);
   --cell-hover-bd:   rgba(34, 211, 238, 0.3);
-  --cell-hit-bg:     rgba(180, 83, 9, 0.6);
-  --cell-hit-bd:     rgba(251, 191, 36, 0.8);
-  --cell-miss-bg:    rgba(30, 41, 59, 0.7);
-  --cell-miss-bd:    rgba(100, 116, 139, 0.5);
-  --cell-dead-bg:    rgba(127, 29, 29, 0.7);
-  --cell-dead-bd:    rgba(239, 68, 68, 0.8);
+  --cell-hit-bg:     rgba(120, 53, 15, 0.65);
+  --cell-hit-bd:     rgba(251, 191, 36, 0.85);
+  --cell-miss-bg:    rgba(127, 29, 29, 0.45);
+  --cell-miss-bd:    rgba(239, 68, 68, 0.55);
+  --cell-dead-bg:    rgba(20, 83, 45, 0.65);
+  --cell-dead-bd:    rgba(34, 197, 94, 0.85);
   --cell-plane-bg:   rgba(22, 42, 74, 0.6);
   --cell-plane-bd:   rgba(34, 211, 238, 0.2);
   --cell-head-bg:    rgba(34, 211, 238, 0.25);
@@ -52,9 +52,9 @@
   --cell-pending-bg: rgba(34, 211, 238, 0.2);
   --cell-pending-bd: rgba(34, 211, 238, 0.9);
   /* Indicators */
-  --ind-miss:   #94a3b8;
-  --ind-hit:    #ffffff;
-  --ind-dead:   #fecaca;
+  --ind-miss:   #fca5a5;
+  --ind-hit:    #fde68a;
+  --ind-dead:   #86efac;
   --ind-head:   #22d3ee;
   --ind-sketch: #a78bfa;
   /* Background pattern */
@@ -98,12 +98,12 @@
   --cell-empty-bd:   rgba(147, 197, 253, 0.7);
   --cell-hover-bg:   rgba(219, 234, 254, 0.75);
   --cell-hover-bd:   rgba(29, 78, 216, 0.45);
-  --cell-hit-bg:     rgba(254, 226, 226, 0.97);
-  --cell-hit-bd:     rgba(220, 38, 38, 0.6);
-  --cell-miss-bg:    rgba(248, 250, 252, 0.97);
-  --cell-miss-bd:    rgba(148, 163, 184, 0.55);
-  --cell-dead-bg:    rgba(254, 202, 202, 0.99);
-  --cell-dead-bd:    rgba(185, 28, 28, 0.7);
+  --cell-hit-bg:     rgba(255, 237, 213, 0.99);
+  --cell-hit-bd:     rgba(194, 120, 0, 0.7);
+  --cell-miss-bg:    rgba(254, 226, 226, 0.99);
+  --cell-miss-bd:    rgba(220, 38, 38, 0.5);
+  --cell-dead-bg:    rgba(220, 252, 231, 0.99);
+  --cell-dead-bd:    rgba(22, 163, 74, 0.65);
   --cell-plane-bg:   rgba(219, 234, 254, 0.92);
   --cell-plane-bd:   rgba(29, 78, 216, 0.22);
   --cell-head-bg:    rgba(147, 197, 253, 0.85);
@@ -113,9 +113,9 @@
   --cell-pending-bg: rgba(191, 219, 254, 0.9);
   --cell-pending-bd: rgba(29, 78, 216, 0.8);
   /* Indicators */
-  --ind-miss:   #9ca3af;
-  --ind-hit:    #dc2626;
-  --ind-dead:   #991b1b;
+  --ind-miss:   #dc2626;
+  --ind-hit:    #92400e;
+  --ind-dead:   #15803d;
   --ind-head:   #1d4ed8;
   --ind-sketch: #7c3aed;
   /* Background pattern  linii de caiet */

@@ -177,6 +177,9 @@ export default function BattleScreen() {
         </div>
       </div>
 
+      {/* Legend */}
+      <Legend />
+
       {/* Stats */}
       <div className="mt-5 flex gap-6 text-xs" style={{ color: 'var(--text-muted)' }}>
         <span>Lovit: <span style={{ color: 'var(--cell-hit-bd)', fontWeight: 700 }}>{myHits}</span></span>
@@ -205,6 +208,47 @@ export default function BattleScreen() {
           </span>
         )}
       </div>
+    </div>
+  );
+}
+
+// ─── Legend ───────────────────────────────────────────────────────────────────
+
+function LegendItem({ state, label, symbol }: { state: string; label: string; symbol: string }) {
+  return (
+    <div className="flex items-center gap-2">
+      <div
+        className="grid-cell flex-shrink-0"
+        style={{ width: 28, height: 28 }}
+        data-state={state}
+      >
+        <span style={{
+          fontWeight: 900,
+          fontSize: 14,
+          color: state === 'miss' ? 'var(--ind-miss)'
+               : state === 'hit'  ? 'var(--ind-hit)'
+               : state === 'dead' ? 'var(--ind-dead)'
+               : 'var(--ind-sketch)',
+          lineHeight: 1,
+        }}>
+          {symbol}
+        </span>
+      </div>
+      <span style={{ color: 'var(--text-muted)', fontSize: 12 }}>{label}</span>
+    </div>
+  );
+}
+
+function Legend() {
+  return (
+    <div
+      className="mt-4 px-5 py-3 rounded-xl flex flex-wrap gap-x-6 gap-y-2 justify-center"
+      style={{ background: 'var(--bg-panel)', border: '1px solid var(--bg-panel-border)' }}
+    >
+      <LegendItem state="miss"   symbol="·" label="Ratat (Aer!)" />
+      <LegendItem state="hit"    symbol="X" label="Lovit (corp)" />
+      <LegendItem state="dead"   symbol="X" label="Doborat (cap) — MORT!" />
+      <LegendItem state="sketch" symbol="·" label="Marcat suspect" />
     </div>
   );
 }

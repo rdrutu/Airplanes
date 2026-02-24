@@ -202,9 +202,11 @@ io.on('connection', (socket) => {
     const opponent = getOpponent(room, socket.id);
     if (!opponent) return cb({ ok: false, error: 'Adversarul s-a deconectat.' });
 
-    // Verificăm dacă celula a mai fost lovită
-    const opponentCell = opponent.grid[row][col];
-    if (opponentCell === 'miss' || opponentCell === 'hit' || opponentCell === 'dead') {
+    // Verificăm dacă trăgătorul a mai vizat celula (nu celula adversarului — aceea
+    // e marcată 'dead' pe tot avionul după MORT, blocând lovituri legitime pe corp)
+    const shooter = room.players[socket.id];
+    const alreadyShot = shooter.shotsGrid[row][col];
+    if (alreadyShot !== 'empty') {
       return cb({ ok: false, error: 'Ai mai tras acolo.' });
     }
 
@@ -212,7 +214,6 @@ io.on('connection', (socket) => {
     const result = processShot(opponent.planes, opponent.grid, row, col);
 
     // Actualizăm grila de ținte a trăgătorului
-    const shooter = room.players[socket.id];
     shooter.shotsGrid[row][col] = result.outcome === 'miss' ? 'miss'
       : result.outcome === 'hit' ? 'hit'
       : 'dead';
